@@ -5,6 +5,8 @@
  */
 package com.edmundophie.ui;
 
+import com.edmundophie.encryption.Encrypt;
+
 /**
  *
  * @author edmundophie
@@ -17,6 +19,8 @@ public class SuperEncryptionUI extends javax.swing.JFrame {
     public SuperEncryptionUI() {
         initComponents();
         this.setTitle("Super Encryption");
+        jTextArea2.setEnabled(false);
+        jTextArea4.setEnabled(false);
     }
 
     /**
@@ -67,6 +71,11 @@ public class SuperEncryptionUI extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTextArea2);
 
         jButton1.setText("Encrypt");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -196,6 +205,21 @@ public class SuperEncryptionUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String key = jTextField1.getText();
+        String plaintext = jTextArea1.getText();
+        if(plaintext.isEmpty() || key.isEmpty())    // Empty field
+            jTextArea2.setText("Some field is still empty");
+        else {
+            if(key.length() != (plaintext.length()/2))  // Key length not good1
+                jTextArea2.setText("Key length must be half of the plaintext length");
+            else {  // Everything is good
+                Encrypt encrypt = new Encrypt(plaintext, key);
+                jTextArea2.setText(encrypt.getCiphertext());
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

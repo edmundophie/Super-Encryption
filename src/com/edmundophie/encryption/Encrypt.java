@@ -27,7 +27,13 @@ public class Encrypt {
         setMode(mode);    
         setPlaintext(plaintext);
         setKey(key);
-        doEncrypt();
+        setCiphertext("");
+        if(mode=="CFB"){
+            doEncryptCFB();
+            System.out.println("ancur");
+        }
+        else
+            doEncrypt();
     }
     
     public void setKey(String key) {
@@ -99,7 +105,7 @@ public class Encrypt {
     
     public void doEncrypt() {
         generateSBox();
-        ciphertext = "";
+        
         char leftBlock[] = new char[4];
         char rightBlock[] = new char[4];
         char processedBlock[] = new char[8];
@@ -141,7 +147,7 @@ public class Encrypt {
                     shuffleBlock(processedBlock, seed);    // Acak blok sesuai seed << 1
                 }
             }
-            System.out.println("cipher length : " + processedBlock.length);
+            
             // tambahkan processedBlock ke ciphertext
             for(int i=0;i<processedBlock.length;++i)
                 ciphertext += processedBlock[i];
@@ -194,5 +200,62 @@ public class Encrypt {
         for(int i=0;i<8;++i) {
             ivBlock[i] = (char) rand.nextInt(256);
         }
+    }
+    
+    /*** CFB ***/
+    private void doEncryptCFB() {
+        generateSBox();
+        
+        char queueBlock[] = new char[8];
+        char encryptedBlock[] = new char[8];
+        queueBlock = ivBlock;
+        
+        for(int block=0;block<plaintext.length();block++) {
+            char cipher;
+            
+            // Enkripsi blok antrian
+            encryptedBlock = encryptBlock(queueBlock);
+            
+            // XOR plainblock and leftMostByte
+            char leftMostByte = encryptedBlock[0];
+            cipher = (char) (plaintext.charAt(block) ^ leftMostByte);
+            
+            // Geser blok antrian ke kiri dan tambahkan cipher
+            for(int i=0;i<6;++i)
+                queueBlock[i] = queueBlock[i+1];
+            queueBlock[7] = cipher;
+            
+            // tambahkan cipher ke ciphertext
+            ciphertext += cipher;
+        }
+    }
+    
+    private char[] encryptBlock(char block[]) {
+        int seed = initialSeed;
+        char leftBlock[] = new char[4];
+        char rightBlock[] = new char[4];
+        
+        // Pecah blok menjadi left dan right
+        for(int i=0,j=4;i<4&&j<8;++i,++j) {
+            leftBlock[i] = block[i];
+            rightBlock[i] = block[j];
+        }
+                
+        char processedBlock[] = new char[8];
+        for(int i=0;i<4;++i){
+            for(int j=0;j<3;++j) {
+                char tempBlock[] = new char[4];
+                tempBlock = rightBlock;
+                rightBlock = mapBySBox(leftBlock, j); // Petakan leftBlock dg SBox[j]
+                leftBlock = tempBlock;
+                
+                // Geser seed
+                int msb = seed >> 31;
+                seed = (seed<<1) | msb;
+                processedBlock = combineArrayOfChar(leftBlock, rightBlock);
+                shuffleBlock(processedBlock, seed);    // Acak blok sesuai seed << 1
+            }
+        }
+        return processedBlock;
     }
 }

@@ -210,7 +210,7 @@ public class SuperEncryptionUI extends javax.swing.JFrame {
         if(plaintext.isEmpty() || key.isEmpty())    // Empty field
             jTextArea2.setText("Some field is still empty");
         else {
-            Encrypt encrypt = new Encrypt(plaintext, key, "CBC");
+            Encrypt encrypt = new Encrypt(plaintext, key, "CFB");
             jTextArea2.setText(encrypt.getCiphertext());
         }
     }//GEN-LAST:event_jButton1ActionPerformed

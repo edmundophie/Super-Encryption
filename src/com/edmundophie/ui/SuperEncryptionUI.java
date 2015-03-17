@@ -19,8 +19,6 @@ public class SuperEncryptionUI extends javax.swing.JFrame {
     public SuperEncryptionUI() {
         initComponents();
         this.setTitle("Super Encryption");
-        jTextArea2.setEnabled(false);
-        jTextArea4.setEnabled(false);
     }
 
     /**
@@ -212,12 +210,8 @@ public class SuperEncryptionUI extends javax.swing.JFrame {
         if(plaintext.isEmpty() || key.isEmpty())    // Empty field
             jTextArea2.setText("Some field is still empty");
         else {
-            if(key.length() != (plaintext.length()/2))  // Key length not good1
-                jTextArea2.setText("Key length must be half of the plaintext length");
-            else {  // Everything is good
-                Encrypt encrypt = new Encrypt(plaintext, key);
-                jTextArea2.setText(encrypt.getCiphertext());
-            }
+            Encrypt encrypt = new Encrypt(plaintext, key, "CBC");
+            jTextArea2.setText(encrypt.getCiphertext());
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
